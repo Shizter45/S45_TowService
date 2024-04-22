@@ -15,28 +15,34 @@ active = false
 RegisterCommand('tow-duty', function()
   if active then
     active = false
-    Wait(1000)
-    TriggerEvent("swt_notifications:Success",'Tow Dispatch','You are now inactive','right',5000,true)
+    TriggerEvent('chat:addMessage', {
+      color = {252,185,51},
+      multiline = true,
+      args = {'[TOW DISPATCH]', 'Congrats you are now off duty!'}
+    })
   else
     active = true
-    Wait(1000)
-    TriggerEvent("swt_notifications:Success",'Tow Dispatch','You are now active','right',5000,true)
+    TriggerEvent('chat:addMessage', {
+      color = {252,185,51},
+      multiline = true,
+      args = {'[TOW DISPATCH]', 'Congrats you are now on duty!'}
+    })
   end
 end)
 
 -- command for players to request tows
 RegisterCommand('request-tow', function()
-  local vehicleName = GetEntityModel(GetVehiclePedIsIn(PlayerPedId(), false))
-
+  local vehicleName = GetDisplayNameFromVehicleModel(GetEntityModel(GetVehiclePedIsIn(PlayerPedId(), false)))
   TriggerServerEvent('S45_TowService:Request', vehicleName)
 end)
 
-RegisterNetEvent('S45_TowService:notify', function(requestor, vehicle)
+RegisterNetEvent('S45_TowService:notify')
+AddEventHandler('S45_TowService:notify', function(requestor, vehicle)
   if active then
     TriggerEvent('chat:addMessage', {
-      color = {242,192,55},
-      multiline = true,
-      args = {'[Tow Disptch]: ', '^*^5' .. player .. '^r^7 has requested a tow for a ^*^1' .. vehicle}
-    })
+        color = {252,185,51},
+        multiline = true,
+        args = {'[TOW DISPATCH]', '^4^*' .. requestor .. '^r^7 has requested a tow truck for a ^6^*'.. vehicle}
+      })
   end
 end)
